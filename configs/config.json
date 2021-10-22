@@ -1,0 +1,22 @@
+{
+    "Auth":
+    {
+        "email":"ruben.mine04@gmail.com",
+        "password":"Cacca1"
+    },
+
+    "Products":[
+        {
+            "ID":"3234324",
+            "quantity":"2",
+            "price":100,
+            "errorPrice":10
+        },
+        {
+            "ID":"3423456",
+            "quantity":"1",
+            "price":1000,
+            "errorPrice":50
+        }
+    ]
+}
