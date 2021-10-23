@@ -22,12 +22,10 @@ def fetchData():
             p = Product(product)
             bot.addProduct(p)
     
-
 def main():
     #browser = webdriver.Firefox()
     #browser.get("https://google.com/ncr")
     print(bot)
-
 
 if __name__ == "__main__":
     fetchData()

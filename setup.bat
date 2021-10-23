@@ -9,23 +9,24 @@ if not exist C:\geckodriver\bin ( goto SETUP ) else ( goto SETUPCOMPLETED )
 ::: with administrator privileges and then install geckodriver
 :SETUP
 net session >nul 2>&1
-if %errorlevel%==1 ( goto NOTADMIN )
-
-echo In order to use this program you MUST have installed:
-echo - Python 3.10
-echo - Firefox
-echo This setup WILL NOT download / install them.
-echo Press enter to continue installation...
-pause >nul
-md "C:\geckodriver\bin"
-copy "%cd%\ext\geckodriver.exe" "C:\geckodriver\bin"
-setx PATH "%path%;C:\geckodriver\bin"
-cls
-color 0a
-echo Setup completed, to start the bot
-echo re-run the script.
-pause >nul
-goto END
+if %errorlevel% == 0 (
+    echo In order to use this program you MUST have installed:
+    echo - Python 3.10
+    echo - Firefox
+    echo This setup WILL NOT download / install them.
+    echo Press enter to continue installation...
+    pause >nul
+    md "C:\geckodriver\bin"
+    copy "%cd%\ext\geckodriver.exe" "C:\geckodriver\bin"
+    setx PATH "%path%;C:\geckodriver\bin"
+    pip install -r %cd%\src\requirements.txt
+    cls
+    color 0a
+    echo Setup completed, to start the bot
+    echo re-run the script.
+    pause >nul
+    goto END
+) else ( goto NOTADMIN )
 
 ::: If the setup has alredy been performed, run the bot
 :SETUPCOMPLETED

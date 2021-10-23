@@ -1,47 +1,42 @@
 class Product:
-
-    def __init__(self, dictProduct) -> None:
-        self.ID = dictProduct["ID"]
-        self.quantity = dictProduct["quantity"]
-        self.price = (float)(dictProduct["price"])
-        self.errorPrice = (float)(dictProduct["errorPrice"])
+    def __init__(self, productsList) -> None:
+        self.ID = productsList["ID"]
+        self.quantity = productsList["quantity"]
+        self.price = (float) (productsList["price"])
+        self.errorPrice = (float) (productsList["errorPrice"])
 
     def __str__(self):
         minPrice = self.price - self.errorPrice
         maxPrice = self.price + self.errorPrice
-        txt = "ID: {} | ".format(self.ID) +\
+        str = "ID: {} | ".format(self.ID) +\
                "quantity: {} | ".format(self.quantity) +\
                "price: {} - {}".format(minPrice, maxPrice)
-        return txt
-
+        return str
 
 class AmazonBot:
-    
-    def __init__(self, email, pswd) -> None:
+    def __init__(self, email: str, pswd: str) -> None:
         self.auth = {
-            "email":email,
-            "pswd":pswd,
+            "email": email,
+            "pswd": pswd,
         }
         self.products = []
 
-    def addProduct(self, product):
+    def addProduct(self, product: Product):
         self.products.append(product)
 
     def checkProducts():
         pass
 
-    def buyProduct(product:Product):
+    def buyProduct(product: Product):
         pass
     
     def __str__(self):
-        txt = "Email: {}\nPassword: {}".format(self.auth["email"], self.auth["pswd"])
+        str = "Email: {}\nPassword: {}".format(self.auth["email"], self.auth["pswd"])
         for p in self.products:
-            txt += "\n" + str(p)
-        return txt
-
+            str += "\n" + str(p)
+        return str
 
 class WebBrowser:
-
     def __init__(self) -> None:
         self.url = ""
         
