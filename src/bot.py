@@ -1,6 +1,8 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 class Product:
     def __init__(self, dictProduct) -> None:
@@ -23,20 +25,43 @@ class WebBrowser:
         self.url = url
         self.browser = webdriver.Firefox()
     
-    def connectAndLogin(self, email: str, pswd: str):
+    def connectAndLogin(self, email: str, pswd: str, delay: int):
         self.browser.get(self.url)
-        temp = self.browser.find_element(By.ID, "nav-link-accountList")
-        temp.click()
-        temp = self.browser.find_element(By.ID, "ap_email")
-        temp.send_keys(email, Keys.ENTER)
-        temp = self.browser.find_element(By.ID, "ap_password")
-        temp.send_keys(pswd, Keys.ENTER)
+        email_field    = None
+        password_field = None
+        email_xpath    = '//*[@id="ap_email"]'      # Email xpath to search in the webpage
+        password_xpath = '//*[@id="ap_password"]'   # Password xpath to search in the webpage
+        wait_seconds   = delay                      # Delay to wait before searching for a field (in seconds)
+        # Search and click the login button
+        login_button = self.browser.find_element(By.ID, "nav-link-accountList")
+        login_button.click()
+        # Search for the email input field
+        try:
+            email_field = self.browser.find_element_by_xpath(email_xpath)
+            #email_field = WebDriverWait(self.browser, wait_seconds).until(
+            #EC.presence_of_element_located((By.XPATH, email_xpath)))
+        except:
+            print("Can't find field {}", email_xpath)
+            self.browser.quit()
+        else:
+            email_field.send_keys(email, Keys.ENTER)
+        # Search for the password input field    
+        try:
+            password_field = WebDriverWait(self.browser, wait_seconds).until(
+            EC.presence_of_element_located((By.XPATH, password_xpath)))
+        except:
+            print("Can't find field {}", password_xpath)
+            self.browser.quit()
+        else:
+            password_field.send_keys(pswd, Keys.ENTER)
+
 
 class AmazonBot:
-    def __init__(self, email: str, pswd: str, url: str) -> None:
+    def __init__(self, url: str, email: str, pswd: str, delay: int) -> None:
         self.auth = {
             "email": email,
             "pswd": pswd,
+            "delay": delay
         }
         self.browser = WebBrowser(url)
         self.products = []
@@ -51,7 +76,7 @@ class AmazonBot:
         pass
 
     def run(self):
-        self.browser.connectAndLogin(self.auth["email"], self.auth["pswd"])
+        self.browser.connectAndLogin(self.auth["email"], self.auth["pswd"], self.auth["delay"])
 
     
     def __str__(self):

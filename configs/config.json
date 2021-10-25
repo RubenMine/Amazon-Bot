@@ -3,7 +3,8 @@
     {
         "url":"https://www.amazon.com/",
         "email":"degasperisantonello67@gmail.com",
-        "password":"Cacca1"
+        "password":"Cacca1",
+        "delay": 3
     },
 
     "Products":[

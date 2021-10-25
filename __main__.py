@@ -16,7 +16,7 @@ def fetchData():
         c = json.loads(configs.read())
 
         auth = c["Auth"]
-        bot = AmazonBot(auth["email"], auth["password"], auth["url"])
+        bot = AmazonBot(auth["url"], auth["email"], auth["password"], auth["delay"])
 
         for product in c["Products"]:
             p = Product(product)
