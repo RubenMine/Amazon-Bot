@@ -1,7 +1,7 @@
 {
     "Auth":
     {
-        "url":"https://www.amazon.com/",
+        "url":"https://www.amazon.it/",
         "email":"degasperisantonello67@gmail.com",
         "password":"Cacca1",
         "delay": 3
@@ -9,13 +9,13 @@
 
     "Products":[
         {
-            "ID":"3234324",
+            "ID":"B08XZ4BT8T",
             "quantity":"2",
             "price":100,
             "errorPrice":10
         },
         {
-            "ID":"3423456",
+            "ID":"B08KKJ37F7",
             "quantity":"1",
             "price":1000,
             "errorPrice":50

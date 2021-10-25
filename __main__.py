@@ -1,15 +1,9 @@
-import sys
-sys.path.insert(0, 'src')
-from src import bot
-
 from selenium import webdriver
-from bot import AmazonBot
-from bot import Product
-from bot import WebBrowser
+from src.bot import AmazonBot, Product
 import json
 
 def fetchData():
-    path = "configs\config.json"
+    path = "Amazon-Bot\configs\config.json"
 
     with open(path, "r") as configs:
         global bot

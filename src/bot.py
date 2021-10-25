@@ -5,6 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import re
 import enum
+import time
 
 class Status(enum.Enum):
     unavailable = 0
@@ -65,17 +66,17 @@ class WebBrowser:
             password_field.send_keys(pswd, Keys.ENTER)
 
     def search_product(self, ASIN: str):
-            product_page = 'http://www.amazon.com/exec/obidos/ASIN/' + ASIN  # Product page for the specified ASIN
+            product_page = 'http://www.amazon.it/exec/obidos/ASIN/' + ASIN  # Product page for the specified ASIN
             ASIN_regex = r'^B[A-Z 0-9]{9}'
             pattern = re.compile(ASIN_regex)
             # Check if provided ASIN matches a basic regex pattern
-            if pattern.match(ASIN):
-                self.browser.get(product_page)
+            #if pattern.match(ASIN):
+            self.browser.get(product_page)
                 # Check if the product exist by checking the current page title
-                if self.browser.title == 'Page Not Found':
-                    self.browser.quit()
-                    print("The provided ASIN ({}) does not exist".format(ASIN))
-            else:
+            if self.browser.title == 'Page Not Found':
+                self.browser.quit()
+                print("The provided ASIN ({}) does not exist".format(ASIN))
+           #else:
                 self.browser.quit()
                 print("The provided ASIN is not valid")
         
@@ -90,7 +91,6 @@ class WebBrowser:
             return True
             
             
-
 class AmazonBot:
     def __init__(self, url: str, email: str, pswd: str, delay: int) -> None:
         self.auth = {
@@ -113,15 +113,19 @@ class AmazonBot:
                 if product.status == Status.unavailable:
                     product.status = Status.available if self.browser.is_available() else Status.unavailable
                 if product.status == Status.available:
-                    self.buyProduct(product)
+                    pass
+                    #self.buyProduct(product)
                 elif product.status == Status.bought:
                     self.products.remove(product)
+
+                time.sleep(1)
 
     def buyProduct(product: Product):
         pass
 
     def run(self):
         self.browser.connectAndLogin(self.auth["email"], self.auth["pswd"], self.auth["delay"])
+        self.checkProducts()
     
     def __str__(self):
         string = "Email: {}\nPassword: {}".format(self.auth["email"], self.auth["pswd"])
