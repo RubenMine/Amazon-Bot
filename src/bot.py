@@ -3,6 +3,13 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import enum
+
+class Status(enum.Enum):
+    unavailable = 0
+    available = 1
+    bought = 2
+
 
 class Product:
     def __init__(self, dictProduct) -> None:
@@ -10,6 +17,7 @@ class Product:
         self.quantity = dictProduct["quantity"]
         self.price = (float) (dictProduct["price"])
         self.errorPrice = (float) (dictProduct["errorPrice"])
+        self.status = Status.unavailable
 
     def __str__(self):
         minPrice = self.price - self.errorPrice
@@ -56,6 +64,7 @@ class WebBrowser:
             password_field.send_keys(pswd, Keys.ENTER)
 
 
+
 class AmazonBot:
     def __init__(self, url: str, email: str, pswd: str, delay: int) -> None:
         self.auth = {
@@ -69,15 +78,26 @@ class AmazonBot:
     def addProduct(self, product: Product):
         self.products.append(product)
 
-    def checkProducts():
-        pass
+    def checkProducts(self):
+        while(len(self.products) >= 1):
+            for product in self.products:
+                if product.status != Status.bought: 
+                    self.browser.search_product(product.ID)
+    
+
+                if product.status == Status.unavailable:
+                    self.check_avaibility(product)
+                elif product.status == Status.available:
+                    self.buyProduct(product)
+                elif product.status == Status.bought:
+                    self.products.remove(product)
 
     def buyProduct(product: Product):
         pass
 
     def run(self):
         self.browser.connectAndLogin(self.auth["email"], self.auth["pswd"], self.auth["delay"])
-
+        self.checkProducts()
     
     def __str__(self):
         string = "Email: {}\nPassword: {}".format(self.auth["email"], self.auth["pswd"])
