@@ -3,6 +3,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import re
 
 class Product:
     def __init__(self, dictProduct) -> None:
@@ -41,38 +42,35 @@ class WebBrowser:
             #email_field = WebDriverWait(self.browser, wait_seconds).until(
             #EC.presence_of_element_located((By.XPATH, email_xpath)))
         except:
-            print("Can't find field {}", email_xpath)
+            print("Can't find field {}".format(email_xpath))
             self.browser.quit()
         else:
             email_field.send_keys(email, Keys.ENTER)
-        # Search for the password input field    
+        # Search for the password input field
         try:
             password_field = WebDriverWait(self.browser, wait_seconds).until(
             EC.presence_of_element_located((By.XPATH, password_xpath)))
         except:
-            print("Can't find field {}", password_xpath)
+            print("Can't find field {}".format(password_xpath))
             self.browser.quit()
         else:
             password_field.send_keys(pswd, Keys.ENTER)
 
-    def search_product(self, ASIN: str, delay: int):
-            searchbar           = None
-            product             = None
-            searchbar_xpath     = '//*[@id="twotabsearchtextbox"]'
-            product_xpath       = '/html/body/div[1]/div[2]/div[1]/div[1]/div/span[3]/div[2]/div[1]/div/div/div/div/div[3]/div[1]/h2/a'
-            wait_seconds        = delay
-            searchbar = WebDriverWait(self.browser, wait_seconds).until(
-                        EC.presence_of_element_located((By.XPATH, searchbar_xpath)))
-            searchbar.send_keys(ASIN, Keys.ENTER)
-            try:
-                product = WebDriverWait(self.browser, wait_seconds).until(
-                EC.presence_of_element_located((By.XPATH, product_xpath)))
-            except:
-                print("Can't find any product with the ASIN: {}", ASIN)
-                self.browser.quit()
+    def search_product(self, ASIN: str):
+            product_page = 'http://www.amazon.com/exec/obidos/ASIN/' + ASIN  # Product page for the specified ASIN
+            ASIN_regex = r'^B[A-Z 0-9]{9}'
+            pattern = re.compile(ASIN_regex)
+            # Check if provided ASIN matches a basic regex pattern
+            if pattern.match(ASIN):
+                self.browser.get(product_page)
+                # Check if the product exist by checking the browser current url or the page title
+                if self.browser.title == 'Page Not Found':
+                    self.browser.quit()
+                    print("The provided ASIN ({}) does not exist".format(ASIN))
             else:
-                product.click()
-
+                self.browser.quit()
+                print("The provided ASIN is not valid")
+            
 
 class AmazonBot:
     def __init__(self, url: str, email: str, pswd: str, delay: int) -> None:
@@ -95,8 +93,6 @@ class AmazonBot:
 
     def run(self):
         self.browser.connectAndLogin(self.auth["email"], self.auth["pswd"], self.auth["delay"])
-        self.browser.search_product("B071JM699B", self.auth["delay"])
-
     
     def __str__(self):
         string = "Email: {}\nPassword: {}".format(self.auth["email"], self.auth["pswd"])
