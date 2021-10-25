@@ -18,11 +18,12 @@ class Product:
         self.quantity = dictProduct["quantity"]
         self.price = (float) (dictProduct["price"])
         self.errorPrice = (float) (dictProduct["errorPrice"])
+        self.status = Status.unavailable
 
     def __str__(self):
         minPrice = self.price - self.errorPrice
         maxPrice = self.price + self.errorPrice
-        string = "ID: {} | ".format(self.ID) +\
+        string = "ASIN: {} | ".format(self.ID) +\
                  "Quantity: {} | ".format(self.quantity) +\
                  "Price: {} - {}".format(minPrice, maxPrice)
         return string
@@ -121,8 +122,6 @@ class AmazonBot:
 
     def run(self):
         self.browser.connectAndLogin(self.auth["email"], self.auth["pswd"], self.auth["delay"])
-        self.browser.search_product('B001F9RA94')
-        print(self.browser.is_available())
     
     def __str__(self):
         string = "Email: {}\nPassword: {}".format(self.auth["email"], self.auth["pswd"])
