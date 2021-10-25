@@ -16,16 +16,14 @@ def fetchData():
         c = json.loads(configs.read())
 
         auth = c["Auth"]
-        bot = AmazonBot(auth["email"], auth["password"])
+        bot = AmazonBot(auth["email"], auth["password"], auth["url"])
 
         for product in c["Products"]:
             p = Product(product)
             bot.addProduct(p)
     
 def main():
-    #browser = webdriver.Firefox()
-    #browser.get("https://google.com/ncr")
-    print(bot)
+    bot.run()
 
 if __name__ == "__main__":
     fetchData()
