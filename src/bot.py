@@ -55,6 +55,24 @@ class WebBrowser:
         else:
             password_field.send_keys(pswd, Keys.ENTER)
 
+    def search_product(self, ASIN: str, delay: int):
+            searchbar           = None
+            product             = None
+            searchbar_xpath     = '//*[@id="twotabsearchtextbox"]'
+            product_xpath       = '/html/body/div[1]/div[2]/div[1]/div[1]/div/span[3]/div[2]/div[1]/div/div/div/div/div[3]/div[1]/h2/a'
+            wait_seconds        = delay
+            searchbar = WebDriverWait(self.browser, wait_seconds).until(
+                        EC.presence_of_element_located((By.XPATH, searchbar_xpath)))
+            searchbar.send_keys(ASIN, Keys.ENTER)
+            try:
+                product = WebDriverWait(self.browser, wait_seconds).until(
+                EC.presence_of_element_located((By.XPATH, product_xpath)))
+            except:
+                print("Can't find any product with the ASIN: {}", ASIN)
+                self.browser.quit()
+            else:
+                product.click()
+
 
 class AmazonBot:
     def __init__(self, url: str, email: str, pswd: str, delay: int) -> None:
@@ -77,6 +95,7 @@ class AmazonBot:
 
     def run(self):
         self.browser.connectAndLogin(self.auth["email"], self.auth["pswd"], self.auth["delay"])
+        self.browser.search_product("B071JM699B", self.auth["delay"])
 
     
     def __str__(self):
