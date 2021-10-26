@@ -9,16 +9,22 @@
 
     "Products":[
         {
-            "ASIN":"B08XZ4BT8T",
-            "quantity":"1",
-            "price":5,
-            "errorPrice":2
-        },
-        {
             "ASIN":"B08KKJ37F7",
             "quantity":"1",
-            "price":1000,
+            "price":500,
             "errorPrice":50
+        },
+        {
+            "ASIN":"B07FVQH59S",
+            "quantity":"1",
+            "price":1,
+            "errorPrice":1
+        },
+        {
+            "ASIN":"B097QC2M42",
+            "quantity":"1",
+            "price":500,
+            "errorPrice":150
         }
     ]
 }

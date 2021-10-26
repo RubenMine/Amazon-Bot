@@ -36,16 +36,13 @@ class WebBrowser:
         self.url = url
         self.browser = webdriver.Firefox()
     
-    def connect_login(self, email: str, pswd: str, delay: int):
-        self.browser.get(self.url)
+    def login(self, email: str, pswd: str, delay: int):
         email_field    = None
         password_field = None
         email_xpath    = '//*[@ID="ap_email"]'      # Email xpath to search in the webpage
         password_xpath = '//*[@ID="ap_password"]'   # Password xpath to search in the webpage
         wait_seconds   = delay                      # Delay to wait before searching for a field (in seconds)
-        # Search and click the login button
-        login_button = self.browser.find_element(By.ID, "nav-link-accountList")
-        login_button.click()
+
         # Search for the email input field
         try:
             email_field = self.browser.find_element_by_xpath(email_xpath)
@@ -96,6 +93,10 @@ class WebBrowser:
                 return True
             else:
                 return False
+    
+    def find_and_click(self, xpath: str):
+        a = self.browser.find_element_by_xpath(xpath)
+        self.browser.execute_script("arguments[0].click();", a)
             
             
 class AmazonBot:
@@ -116,24 +117,35 @@ class AmazonBot:
             for product in self.products:
                 if product.status != Status.bought: 
                     self.browser.search_product(product.ASIN)
-
+                
+                
                 if product.status == Status.unavailable:
                     product.status = Status.available if self.browser.is_available(product.price, product.errorPrice) else Status.unavailable
-                if product.status == Status.available:
-                    pass
-                    #self.buy_product(product)
-                elif product.status == Status.bought:
-                    self.products.remove(product)
+
+                if product.status == Status.bought:
+                    self.products.remove(product)    
+                elif product.status == Status.available:
+                    self.buy_product(product)
+                    product.status = Status.bought
 
                 print(product.status)
 
                 time.sleep(1)
 
-    def buy_product(product: Product):
-        pass
+    def buy_product(self, product: Product):
+        buybutton_xpath = '//*[@id="buy-now-button"]'
+        self.browser.find_and_click(buybutton_xpath)
+
+        time.sleep(self.auth["delay"])
+        self.browser.login(self.auth["email"], self.auth["pswd"], self.auth["delay"])
+        time.sleep(self.auth["delay"]+5)
+
+        buybutton_xpath = '/html/body/div[5]/div/div[2]/form/div/div/div/div[2]/div/div[1]/div/div[1]/div/span/span/input'
+        self.browser.find_and_click(buybutton_xpath)
+        print("ORDINE EFFETTUATO CON SUCCESSO!")
+        time.sleep(10)
 
     def run(self):
-        self.browser.connect_login(self.auth["email"], self.auth["pswd"], self.auth["delay"])
         self.check_product()
     
     def __str__(self):
