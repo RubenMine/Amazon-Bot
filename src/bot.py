@@ -7,6 +7,7 @@ import re
 import enum
 import time
 
+
 class Status(enum.Enum):
     unavailable = 0
     available = 1
@@ -15,16 +16,16 @@ class Status(enum.Enum):
 
 class Product:
     def __init__(self, dictProduct) -> None:
-        self.ID = dictProduct["ID"]
+        self.ASIN = dictProduct["ASIN"]
         self.quantity = dictProduct["quantity"]
         self.price = (float) (dictProduct["price"])
-        self.errorPrice = (float) (dictProduct["errorPrice"])
+        self.errorPrice = (int) (dictProduct["errorPrice"])
         self.status = Status.unavailable
 
     def __str__(self):
         minPrice = self.price - self.errorPrice
         maxPrice = self.price + self.errorPrice
-        string = "ASIN: {} | ".format(self.ID) +\
+        string = "ASIN: {} | ".format(self.ASIN) +\
                  "Quantity: {} | ".format(self.quantity) +\
                  "Price: {} - {}".format(minPrice, maxPrice)
         return string
@@ -35,12 +36,12 @@ class WebBrowser:
         self.url = url
         self.browser = webdriver.Firefox()
     
-    def connectAndLogin(self, email: str, pswd: str, delay: int):
+    def connect_login(self, email: str, pswd: str, delay: int):
         self.browser.get(self.url)
         email_field    = None
         password_field = None
-        email_xpath    = '//*[@id="ap_email"]'      # Email xpath to search in the webpage
-        password_xpath = '//*[@id="ap_password"]'   # Password xpath to search in the webpage
+        email_xpath    = '//*[@ID="ap_email"]'      # Email xpath to search in the webpage
+        password_xpath = '//*[@ID="ap_password"]'   # Password xpath to search in the webpage
         wait_seconds   = delay                      # Delay to wait before searching for a field (in seconds)
         # Search and click the login button
         login_button = self.browser.find_element(By.ID, "nav-link-accountList")
@@ -66,29 +67,35 @@ class WebBrowser:
             password_field.send_keys(pswd, Keys.ENTER)
 
     def search_product(self, ASIN: str):
-            product_page = 'http://www.amazon.it/exec/obidos/ASIN/' + ASIN  # Product page for the specified ASIN
+            product_page = 'http://www.amazon.it/dp/' + ASIN  # Product page for the specified ASIN
             ASIN_regex = r'^B[A-Z 0-9]{9}'
             pattern = re.compile(ASIN_regex)
-            # Check if provided ASIN matches a basic regex pattern
+            # Check if provASINed ASIN matches a basic regex pattern
             #if pattern.match(ASIN):
             self.browser.get(product_page)
                 # Check if the product exist by checking the current page title
             if self.browser.title == 'Page Not Found':
                 self.browser.quit()
-                print("The provided ASIN ({}) does not exist".format(ASIN))
+                print("The provASINed ASIN ({}) does not exist".format(ASIN))
            #else:
                 self.browser.quit()
-                print("The provided ASIN is not valid")
+                print("The provASINed ASIN is not valASIN")
         
-    def is_available(self) -> bool:
+    def is_available(self, price: float, errorPrice: int) -> bool:
         buybutton_xpath = '//*[@id="buy-now-button"]'
-        buybutton_field = None
+        buyprice_xpath = '//*[@id="price_inside_buybox"]'
+
         try:
             buybutton_field = self.browser.find_element_by_xpath(buybutton_xpath)
+            buyprice_field = self.browser.find_element_by_xpath(buyprice_xpath)
         except:
             return False
         else:
-            return True
+            buyprice = (float)(buyprice_field.text[:-1].replace(",", "."))
+            if buyprice < price+errorPrice and buyprice > price-errorPrice:
+                return True
+            else:
+                return False
             
             
 class AmazonBot:
@@ -101,31 +108,33 @@ class AmazonBot:
         self.browser = WebBrowser(url)
         self.products = []
 
-    def addProduct(self, product: Product):
+    def add_product(self, product: Product):
         self.products.append(product)
 
-    def checkProducts(self):
+    def check_product(self):
         while(len(self.products) >= 1):
             for product in self.products:
                 if product.status != Status.bought: 
-                    self.browser.search_product(product.ID)
+                    self.browser.search_product(product.ASIN)
 
                 if product.status == Status.unavailable:
-                    product.status = Status.available if self.browser.is_available() else Status.unavailable
+                    product.status = Status.available if self.browser.is_available(product.price, product.errorPrice) else Status.unavailable
                 if product.status == Status.available:
                     pass
-                    #self.buyProduct(product)
+                    #self.buy_product(product)
                 elif product.status == Status.bought:
                     self.products.remove(product)
 
+                print(product.status)
+
                 time.sleep(1)
 
-    def buyProduct(product: Product):
+    def buy_product(product: Product):
         pass
 
     def run(self):
-        self.browser.connectAndLogin(self.auth["email"], self.auth["pswd"], self.auth["delay"])
-        self.checkProducts()
+        self.browser.connect_login(self.auth["email"], self.auth["pswd"], self.auth["delay"])
+        self.check_product()
     
     def __str__(self):
         string = "Email: {}\nPassword: {}".format(self.auth["email"], self.auth["pswd"])

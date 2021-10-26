@@ -9,13 +9,13 @@
 
     "Products":[
         {
-            "ID":"B08XZ4BT8T",
-            "quantity":"2",
-            "price":100,
-            "errorPrice":10
+            "ASIN":"B08XZ4BT8T",
+            "quantity":"1",
+            "price":5,
+            "errorPrice":2
         },
         {
-            "ID":"B08KKJ37F7",
+            "ASIN":"B08KKJ37F7",
             "quantity":"1",
             "price":1000,
             "errorPrice":50

@@ -14,7 +14,7 @@ def fetchData():
 
         for product in c["Products"]:
             p = Product(product)
-            bot.addProduct(p)
+            bot.add_product(p)
     
 def main():
     bot.run()
