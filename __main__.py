@@ -1,5 +1,4 @@
-from selenium import webdriver
-from src.bot import AmazonBot, Product
+from src.bot import Product, AmazonBot
 import json
 
 def fetchData():

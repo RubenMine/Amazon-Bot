@@ -32,30 +32,31 @@ class Product:
 
 
 class WebBrowser:
-    def __init__(self, url: str) -> None:
+    def __init__(self, url: str, delay: int) -> None:
         self.url = url
         self.browser = webdriver.Firefox()
-    
-    def login(self, email: str, pswd: str, delay: int):
+        self.wait_second = delay                    # Delay to wait before searching for a field (in seconds)
+
+    def login(self, email: str, pswd: str):
         email_field    = None
         password_field = None
         email_xpath    = '//*[@ID="ap_email"]'      # Email xpath to search in the webpage
         password_xpath = '//*[@ID="ap_password"]'   # Password xpath to search in the webpage
-        wait_seconds   = delay                      # Delay to wait before searching for a field (in seconds)
 
         # Search for the email input field
         try:
-            email_field = self.browser.find_element_by_xpath(email_xpath)
-            #email_field = WebDriverWait(self.browser, wait_seconds).until(
-            #EC.presence_of_element_located((By.XPATH, email_xpath)))
+            #email_field = self.browser.find_element_by_xpath(email_xpath)
+            email_field = WebDriverWait(self.browser, self.wait_seconds).until(
+            EC.presence_of_element_located((By.XPATH, email_xpath)))
         except:
             print("Can't find field {}".format(email_xpath))
             self.browser.quit()
         else:
             email_field.send_keys(email, Keys.ENTER)
+
         # Search for the password input field
         try:
-            password_field = WebDriverWait(self.browser, wait_seconds).until(
+            password_field = WebDriverWait(self.browser, self.wait_seconds).until(
             EC.presence_of_element_located((By.XPATH, password_xpath)))
         except:
             print("Can't find field {}".format(password_xpath))
@@ -64,20 +65,9 @@ class WebBrowser:
             password_field.send_keys(pswd, Keys.ENTER)
 
     def search_product(self, ASIN: str):
-            product_page = 'http://www.amazon.it/dp/' + ASIN  # Product page for the specified ASIN
-            ASIN_regex = r'^B[A-Z 0-9]{9}'
-            pattern = re.compile(ASIN_regex)
-            # Check if provASINed ASIN matches a basic regex pattern
-            #if pattern.match(ASIN):
+            product_page = self.url + 'dp/' + ASIN  # Product page for the specified ASIN
             self.browser.get(product_page)
-                # Check if the product exist by checking the current page title
-            if self.browser.title == 'Page Not Found':
-                self.browser.quit()
-                print("The provASINed ASIN ({}) does not exist".format(ASIN))
-           #else:
-                self.browser.quit()
-                print("The provASINed ASIN is not valASIN")
-        
+   
     def is_available(self, price: float, errorPrice: int) -> bool:
         buybutton_xpath = '//*[@id="buy-now-button"]'
         buyprice_xpath = '//*[@id="price_inside_buybox"]'
@@ -104,10 +94,12 @@ class AmazonBot:
         self.auth = {
             "email": email,
             "pswd": pswd,
-            "delay": delay
         }
-        self.browser = WebBrowser(url)
+        self.browser = WebBrowser(url, delay)
         self.products = []
+
+    def run(self):
+        self.check_product()
 
     def add_product(self, product: Product):
         self.products.append(product)
@@ -128,8 +120,6 @@ class AmazonBot:
                     self.buy_product(product)
                     product.status = Status.bought
 
-                print(product.status)
-
                 time.sleep(1)
 
     def buy_product(self, product: Product):
@@ -144,9 +134,6 @@ class AmazonBot:
         self.browser.find_and_click(buybutton_xpath)
         print("ORDINE EFFETTUATO CON SUCCESSO!")
         time.sleep(10)
-
-    def run(self):
-        self.check_product()
     
     def __str__(self):
         string = "Email: {}\nPassword: {}".format(self.auth["email"], self.auth["pswd"])
