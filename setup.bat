@@ -19,7 +19,7 @@ if %errorlevel% == 0 (
     md "C:\geckodriver\bin"
     copy "%cd%\ext\geckodriver.exe" "C:\geckodriver\bin"
     setx PATH "%path%;C:\geckodriver\bin"
-    pip install -r %cd%\src\requirements.txt
+    pip install -r %cd%\requirements.txt
     cls
     color 0a
     echo Setup completed, to start the bot

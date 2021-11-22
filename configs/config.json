@@ -4,7 +4,7 @@
         "url":"https://www.amazon.it/",
         "email":"degasperisantonello67@gmail.com",
         "password":"Cacca1",
-        "delay": 3
+        "delay": 5
     },
 
     "Products":[
@@ -13,18 +13,6 @@
             "quantity":"1",
             "price":500,
             "errorPrice":50
-        },
-        {
-            "ASIN":"B07FVQH59S",
-            "quantity":"1",
-            "price":1,
-            "errorPrice":1
-        },
-        {
-            "ASIN":"B097QC2M42",
-            "quantity":"1",
-            "price":500,
-            "errorPrice":150
         }
     ]
 }

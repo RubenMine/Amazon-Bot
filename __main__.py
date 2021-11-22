@@ -1,8 +1,8 @@
-from src.bot import Product, AmazonBot
+from src.bot import AmazonBot, Product
 import json
 
 def fetchData():
-    path = "Amazon-Bot\configs\config.json"
+    path = "configs\config.json"
 
     with open(path, "r") as configs:
         global bot
